@@ -1,0 +1,15 @@
+.idea/
+/target/
+bin/
+.settings/
+.classpath
+.project
+*.class
+*.patch
+*.iml
+.factorypath
+*.log
+
+### OS ###
+.DS_Store
+.DS_Store?
