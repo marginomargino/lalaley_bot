@@ -1,0 +1,29 @@
+
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+jar {
+    archiveName = "${baseName}.${extension}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+ext {
+}
+
+dependencies {
+    compile "org.telegram:telegrambots:4.4.0.1"
+
+}
+
+compileJava {
+    options.compilerArgs = ['-parameters']
+}
