@@ -9,6 +9,8 @@ bin/
 *.iml
 .factorypath
 *.log
+.gradle/
+out/
 
 ### OS ###
 .DS_Store
