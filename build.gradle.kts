@@ -24,7 +24,15 @@ dependencies {
 }
 
 application {
-    mainClass.set("core.Main")
+    mainClass.set("core.MainKt")
+}
+
+tasks.jar {
+    manifest {
+        attributes("Main-Class" to "core.MainKt")
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }
 
 kotlin.target.compilations.all {
