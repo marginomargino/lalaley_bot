@@ -26,6 +26,7 @@ import org.quartz.JobBuilder
 import org.quartz.TriggerBuilder
 import org.quartz.impl.StdSchedulerFactory
 import scheduling.SendMessageJob
+import scheduling.generateRandomCronExpression
 import kotlin.random.Random
 
 
@@ -149,12 +150,9 @@ object Bot {
         val scheduler = StdSchedulerFactory.getDefaultScheduler()
         scheduler.start()
 
-
-        val job = JobBuilder.newJob(SendMessageJob::class.java)
-            .build()
-
+        val job = JobBuilder.newJob(SendMessageJob::class.java).build()
         val trigger = TriggerBuilder.newTrigger()
-            .withSchedule(CronScheduleBuilder.cronSchedule("0 * * ? * *"))
+            .withSchedule(CronScheduleBuilder.cronSchedule(generateRandomCronExpression()))
             .build()
 
         scheduler.scheduleJob(job, trigger)
