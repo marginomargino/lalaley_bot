@@ -19,9 +19,10 @@ dependencies {
     implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.1.0")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.21.0") // Overriding com.vk.api:sdk:1.0.14
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
-    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1")
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.2")
     implementation("org.mongodb:bson-kotlinx:4.10.2")
+    implementation("org.quartz-scheduler:quartz:2.3.2")
 }
 
 application {

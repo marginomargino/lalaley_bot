@@ -1,5 +1,6 @@
 package telegram
 
+import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.command
@@ -20,27 +21,32 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import message.MessageProvider
 import message.VkMessage
+import org.quartz.CronScheduleBuilder
+import org.quartz.JobBuilder
+import org.quartz.TriggerBuilder
+import org.quartz.impl.StdSchedulerFactory
+import scheduling.SendMessageJob
 import kotlin.random.Random
 
 
 object Bot {
-    suspend fun bot() =
-        bot {
-            token = env["BOT_TOKEN"]
-            logLevel = LogLevel.Error
-            dispatch {
-                command("today") {
-                    val today = clock.todayIn(timeZone)
-                    process(Task.ForDate(today.dayOfMonth, today.monthNumber))
-                }
-                command("random") {
-                    process(Task.Random)
-                }
-                telegramError {
-                    println(error.getErrorMessage())
-                }
+
+    private val bot: Bot = bot {
+        token = env["BOT_TOKEN"]
+        logLevel = LogLevel.Error
+        dispatch {
+            command("today") {
+                val today = clock.todayIn(timeZone)
+                process(Task.ForDate(today.dayOfMonth, today.monthNumber))
+            }
+            command("random") {
+                process(Task.Random)
+            }
+            telegramError {
+                println(error.getErrorMessage())
             }
         }
+    }
 
 
     private fun String.escape(): String {
@@ -71,8 +77,13 @@ object Bot {
 
 
     private suspend fun CommandHandlerEnvironment.process(task: Task) {
+        val chatId = ChatId.fromId(message.chat.id).also(::println)
+        process(chatId, task)
+    }
+
+
+    suspend fun process(chatId: ChatId, task: Task) {
         try {
-            val chatId = ChatId.fromId(message.chat.id)
             bot.sendChatAction(
                 chatId = chatId,
                 action = ChatAction.TYPING
@@ -129,6 +140,24 @@ object Bot {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+    }
+
+
+    fun start(){
+        bot.startPolling()
+
+        val scheduler = StdSchedulerFactory.getDefaultScheduler()
+        scheduler.start()
+
+
+        val job = JobBuilder.newJob(SendMessageJob::class.java)
+            .build()
+
+        val trigger = TriggerBuilder.newTrigger()
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 * * ? * *"))
+            .build()
+
+        scheduler.scheduleJob(job, trigger)
     }
 
 
