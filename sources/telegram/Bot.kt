@@ -77,7 +77,7 @@ object Bot {
 
 
     private suspend fun CommandHandlerEnvironment.process(task: Task) {
-        val chatId = ChatId.fromId(message.chat.id).also(::println)
+        val chatId = ChatId.fromId(message.chat.id)
         process(chatId, task)
     }
 
