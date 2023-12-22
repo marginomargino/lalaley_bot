@@ -21,12 +21,10 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import message.MessageProvider
 import message.VkMessage
-import org.quartz.CronScheduleBuilder
 import org.quartz.JobBuilder
-import org.quartz.TriggerBuilder
 import org.quartz.impl.StdSchedulerFactory
 import scheduling.SendMessageJob
-import scheduling.generateRandomCronExpression
+import scheduling.triggerForRandomTime
 import kotlin.random.Random
 
 
@@ -144,18 +142,14 @@ object Bot {
     }
 
 
-    fun start(){
+    fun start() {
         bot.startPolling()
 
         val scheduler = StdSchedulerFactory.getDefaultScheduler()
         scheduler.start()
 
         val job = JobBuilder.newJob(SendMessageJob::class.java).build()
-        val trigger = TriggerBuilder.newTrigger()
-            .withSchedule(CronScheduleBuilder.cronSchedule(generateRandomCronExpression()))
-            .build()
-
-        scheduler.scheduleJob(job, trigger)
+        scheduler.scheduleJob(job, triggerForRandomTime())
     }
 
 
