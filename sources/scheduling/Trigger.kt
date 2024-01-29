@@ -1,5 +1,6 @@
 package scheduling
 
+import core.Static.env
 import core.Static.timeZone
 import kotlinx.datetime.*
 import org.quartz.CronScheduleBuilder
@@ -10,7 +11,10 @@ import kotlin.random.Random
 
 private fun generateRandomCronExpression(): String {
     val now = Clock.System.now().toLocalDateTime(timeZone)
-    val futureDate = now.date.plus(3 + Random.nextLong(4), DateTimeUnit.DAY)
+    val futureDate = now.date.plus(
+        env["SCHEDULE_BASE_DAYS"].toLong() + Random.nextLong(env["SCHEDULE_RANDOM_DAYS"].toLong()),
+        DateTimeUnit.DAY,
+    )
 
     var dayOfWeek = futureDate.dayOfWeek.isoDayNumber
     val hour = Random.nextInt(10, 19)
