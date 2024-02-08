@@ -3,38 +3,24 @@ package scheduling
 import core.Static.env
 import core.Static.timeZone
 import kotlinx.datetime.*
-import org.quartz.CronScheduleBuilder
-import org.quartz.CronTrigger
+import org.quartz.Trigger
 import org.quartz.TriggerBuilder
-import java.util.TimeZone
+import java.util.*
 import kotlin.random.Random
 
-private fun generateRandomCronExpression(): String {
+
+fun triggerForRandomTime(): Trigger {
     val now = Clock.System.now().toLocalDateTime(timeZone)
-    val futureDate = now.date.plus(
-        env["SCHEDULE_BASE_DAYS"].toLong() + Random.nextLong(env["SCHEDULE_RANDOM_DAYS"].toLong()),
-        DateTimeUnit.DAY,
-    )
 
-    var dayOfWeek = futureDate.dayOfWeek.isoDayNumber
-    val hour = Random.nextInt(10, 19)
-    val minute = Random.nextInt(0, 60)
+    val baseDays = env["SCHEDULE_BASE_DAYS"].toLong()
+    val randomDays = Random.nextLong(env["SCHEDULE_RANDOM_DAYS"].toLong())
 
-    if (futureDate.dayOfWeek == now.dayOfWeek &&
-        (hour < now.hour || (hour == now.hour && minute <= now.minute))
-    ) {
-        dayOfWeek = (dayOfWeek % 7) + 1
-    }
+    val triggerTime = now.date.plus(baseDays + randomDays, DateTimeUnit.DAY)
+        .atTime(Random.nextInt(10, 19), Random.nextInt(0, 60))
 
-    return "0 $minute $hour ? * $dayOfWeek *"
-}
+    val triggerDate = Date.from(triggerTime.toJavaLocalDateTime().atZone(timeZone.toJavaZoneId()).toInstant())
 
-
-fun triggerForRandomTime(): CronTrigger =
-    TriggerBuilder.newTrigger()
-        .withSchedule(
-            CronScheduleBuilder.cronSchedule(generateRandomCronExpression())
-                .inTimeZone(TimeZone.getTimeZone(timeZone.toJavaZoneId()))
-        )
+    return TriggerBuilder.newTrigger()
+        .startAt(triggerDate)
         .build()
-
+}
