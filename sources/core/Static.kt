@@ -9,7 +9,7 @@ import java.util.*
 
 object Static {
     val clock = Clock.System
-    val env: Dotenv = dotenv{ ignoreIfMissing = true }
+    val env: Dotenv = dotenv { ignoreIfMissing = true }
     val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.forLanguageTag("ru-RU"))
     val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val timeZone = TimeZone.of("Europe/Samara")

@@ -69,8 +69,7 @@ object Bot {
                     else -> 30
                 }
             )
-            MessageProvider.get(dayOfMonth, monthNumber).takeIf { it.isNotEmpty() }
-                ?.let { return it }
+            MessageProvider.get(dayOfMonth, monthNumber).takeIf { it.isNotEmpty() }?.let { return it }
         } while (true)
     }
 
@@ -81,7 +80,7 @@ object Bot {
     }
 
 
-    suspend fun process(chatId: ChatId, task: Task) {
+    suspend fun process(chatId: ChatId, task: Task, skipIfEmpty: Boolean = false) {
         try {
             bot.sendChatAction(
                 chatId = chatId,
@@ -94,11 +93,13 @@ object Bot {
             }
 
             if (task is Task.ForDate && messagesByYear.isEmpty()) {
-                bot.sendMessage(
-                    chatId = chatId,
-                    parseMode = ParseMode.MARKDOWN_V2,
-                    text = "*А в этот день ничего не произошло*"
-                )
+                if (!skipIfEmpty) {
+                    bot.sendMessage(
+                        chatId = chatId,
+                        parseMode = ParseMode.MARKDOWN_V2,
+                        text = "*А в этот день ничего не произошло*"
+                    )
+                }
                 return
             }
 
